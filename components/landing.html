@@ -1,0 +1,94 @@
+{{define "landing"}}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{.Title}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="The Deci-phers v1.0" />
+    <meta property="og:title" content="The Deci-phers v1.0 | Math Challenge" />
+    <meta
+      property="og:description"
+      content="The Deci-phers v1.0 is an online math challenge by MATSOC."
+    />
+    <link rel="icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="/components/css/main.css" />
+  </head>
+  <body class="page page-landing pixel">
+    {{template "header" .}} {{template "confetti" .}}
+
+    <main class="page-main">
+      <div class="container section-stack">
+        <section class="landing-hero">
+          <div class="landing-hero-copy">
+            <h1 class="display">
+              The Deci-phers <span class="brand-accent" style="font-weight: 800;">v1.0</span>
+            </h1>
+            <p class="body-lg" style="margin-top: -0.5rem; line-height: 2;">
+              This platform is created by Matsoc.
+            </p>
+          </div>
+          <div class="landing-hero-support">
+            <h2 class="heading-md">Instructions</h2>
+
+            <div
+              class="panel"
+              style="
+                margin-top: 12px;
+                padding: 16px;
+                border: 2px solid #145f4c;
+                border-radius: 6px;
+                background-color: #0d0e1180;
+              "
+            >
+              <p class="body-sm">
+                The platform encompasses an Online Math Hunt in
+                which students can make their way through math levels created
+                by us.
+              </p>
+              <p class="body-sm">
+                At each level, the students will encounter a problem
+                which shall point to one answer. Each level has
+                one correct answer.
+              </p>
+
+              <p class="body-sm">
+                Answers will always be lower-case, alphanumeric and will contain
+                no spaces. Special characters are allowed. For example, if the
+                answer is <strong class="brand-accent">99</strong>, you
+                would type it in as
+                <strong class="brand-accent">99</strong>.
+              </p>
+
+              <p class="body-sm">
+                All levels have to be done in a sequential order. No levels can
+                be skipped and the order of levels cannot be changed by own
+                will.
+              </p>
+              <p class="body-sm">
+                You can come back to this page any time by clicking on the
+                logo in the top left corner of the page.
+              </p>
+            </div>
+
+          </div>
+          <div class="actions actions-center" style="margin-top: 30px;">
+            <a href="/auth" class="button">Register for The Deci-phers v1.0</a>
+          </div>
+        </section>
+
+        {{if .CountdownLive}} {{template "countdown" .}} {{end}}
+      </div>
+    </main>
+
+    {{template "footer" .}}
+    <script src="/components/js/app.js"></script>
+    <script src="/components/js/confetti.js"></script>
+    {{template "cli" .}}
+  </body>
+</html>
+{{end}}

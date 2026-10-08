@@ -1,0 +1,131 @@
+{{define "auth"}}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{.Title}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="icon" href="/assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@hackernoon/pixel-icon-library/fonts/iconfont.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css"
+    />
+    <link rel="stylesheet" href="/components/css/main.css" />
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+  </head>
+  <body class="page page-auth pixel">
+    {{template "header" .}}
+    <main class="page-main" style="min-height: 74vh">
+      <div class="container auth-layout">
+        <section class="auth-showcase">
+          <p class="eyebrow">Account Access</p>
+          <h1 class="heading-xl">Login</h1>
+          <p class="body-lg">
+            Use your `@dpsrkp.net` address to sign up, verify with OTP, and
+            continue from exactly where you left off.
+          </p>
+        </section>
+
+        <section class="auth-panel">
+          <nav class="auth-tabs" aria-label="Authentication modes">
+            <button class="auth-mode-btn" data-mode="signup">Auth</button>
+          </nav>
+
+          <form id="auth-form" class="form-stack">
+            <div class="field-row">
+              <i class="hn hn-user"></i>
+              <input
+                id="name"
+                name="name"
+                class="field pixel-input"
+                placeholder="Your full name"
+                style="flex: 1"
+              />
+            </div>
+            <div class="field-row">
+              <i class="hn hn-envelope"></i>
+              <input
+                id="email"
+                name="email"
+                class="field mono pixel-input"
+                placeholder="you@dpsrkp.net"
+                style="flex: 1"
+              />
+            </div>
+
+            <input id="otp" name="otp" type="hidden" />
+
+            <div id="otpform_container" class="otp-container hidden">
+              <div class="otp-header">
+                <h1 class="heading-sm">Email Verification</h1>
+                <p class="otp-note">
+                  The code has been sent to
+                  <span id="display-email" class="mono"></span>
+                </p>
+              </div>
+              <div id="otp-form">
+                <div class="otp-inputs">
+                  <input
+                    type="number"
+                    class="otp-input pixel-input"
+                    maxlength="1"
+                    inputmode="numeric"
+                  />
+                  <input
+                    type="number"
+                    class="otp-input pixel-input"
+                    maxlength="1"
+                    inputmode="numeric"
+                  />
+                  <input
+                    type="number"
+                    class="otp-input pixel-input"
+                    maxlength="1"
+                    inputmode="numeric"
+                  />
+                  <input
+                    type="number"
+                    class="otp-input pixel-input"
+                    maxlength="1"
+                    inputmode="numeric"
+                  />
+                  <input
+                    type="number"
+                    class="otp-input pixel-input"
+                    maxlength="1"
+                    inputmode="numeric"
+                  />
+                  <input
+                    type="number"
+                    class="otp-input pixel-input"
+                    maxlength="1"
+                    inputmode="numeric"
+                  />
+                </div>
+              </div>
+              <div class="otp-footer">
+                <button type="button" id="back-to-email" class="back-link">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                  Didn't receive an OTP? Re-enter your E-mail address.
+                </button>
+              </div>
+            </div>
+
+            <button class="button button-block" type="submit">Continue</button>
+          </form>
+        </section>
+      </div>
+    </main>
+    {{template "footer" .}}
+    <script src="/components/js/app.js"></script>
+    <script src="/components/js/auth.js"></script>
+  </body>
+</html>
+{{end}}

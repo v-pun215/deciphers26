@@ -1,0 +1,104 @@
+.site-header {
+  position: static;
+  top: 0;
+  z-index: 40;
+  background: transparent;
+  width: 100%;
+  font-family: "Montserrat";
+}
+
+.site-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  min-height: 108px;
+  width: 90%;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-mark {
+  width: 64px;
+  height: 64px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.brand-title {
+  margin: 0;
+  color: var(--fg-primary);
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.05;
+  font-family: "Montserrat";
+}
+
+.brand-accent {
+  color: var(--brand);
+  font-weight: 600;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.nav-item,
+.nav-item--active {
+  padding: 12px 0;
+  color: var(--fg-secondary);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1;
+  transition: color 160ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-item:hover,
+.nav-item--active {
+  color: var(--brand-accent);
+}
+
+.site-nav .hn {
+  font-size: 18px;
+  line-height: 1;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.site-nav .nav-label {
+  display: inline-block;
+}
+
+.mobile-footer {
+  display: none;
+}
+
+.mobile-top-auth {
+  display: none;
+}
+
+.site-header .mobile-top-auth {
+  display: none;
+}
+
+.button.button--auth .hn {
+  margin-left: 8px;
+}
+
+.hamburger-img {
+  font-size: 36px;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+}

@@ -1,0 +1,53 @@
+{{define "redirect"}}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{.Title}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="icon" href="/assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css"
+    />
+    <link rel="stylesheet" href="/components/css/main.css" />
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+  </head>
+  <body class="page page-redirect pixel">
+    {{template "header" .}}
+    <main
+      class="page-layout redirect-layout page-main"
+      style="min-height: 74vh"
+    >
+      <section class="redirect-card">
+        <p class="eyebrow">Redirecting</p>
+        <h1 class="heading-xl">One moment</h1>
+        <p class="redirect-copy">{{.RedirectReason}}</p>
+        <div class="actions actions-center">
+          <a class="button" href="{{.RedirectURL}}">Continue now</a>
+        </div>
+      </section>
+    </main>
+    {{template "footer" .}}
+    <script id="redirect-data" type="application/json">
+      {{toJSON .RedirectData}}
+    </script>
+    <script>
+      (function () {
+        try {
+          var el = document.getElementById("redirect-data");
+          window.__REDIRECT__ = el ? JSON.parse(el.textContent) : {};
+        } catch (e) {
+          console.error("Failed to parse redirect data", e);
+          window.__REDIRECT__ = {};
+        }
+      })();
+    </script>
+    <script src="/components/js/app.js"></script>
+    <script src="/components/js/redirect.js"></script>
+  </body>
+</html>
+{{end}}

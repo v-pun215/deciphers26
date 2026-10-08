@@ -1,0 +1,107 @@
+.button,
+.button-secondary,
+.button-ghost,
+.button-danger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  font-family:
+    "Montserrat",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  transition: all 0.1s ease;
+  background-clip: padding-box;
+  cursor: pointer;
+  border: none;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.button > *,
+.button-secondary > *,
+.button-ghost > *,
+.button-danger > * {
+  position: relative;
+  z-index: 1;
+}
+
+.button:hover,
+.button-secondary:hover,
+.button-ghost:hover,
+.button-danger:hover {
+  transform: scale(1.05);
+}
+
+.button:active,
+.button-secondary:active,
+.button-ghost:active,
+.button-danger:active {
+  transform: translateY(2px) scale(0.99);
+  filter: brightness(0.93) contrast(1.12);
+  transition: all 0.05s;
+}
+
+.button {
+  background: var(--brand);
+  color: #ffffff;
+}
+
+.button:hover {
+  background: var(--brand-hover);
+}
+
+.button-secondary {
+  background: var(--bg-panel);
+  color: var(--fg-primary);
+}
+
+.button-secondary:hover {
+  background: var(--bg-elevated);
+}
+
+.button-ghost:hover {
+  background: #c0c0c0;
+}
+
+.button-ghost {
+  background: var(--bg-light-grey);
+  color: #1a1a1a;
+}
+
+.button-danger {
+  background: #241314;
+  color: #ffd5d5;
+}
+
+.button:disabled,
+.button-secondary:disabled,
+.button-ghost:disabled,
+.button-danger:disabled {
+  cursor: not-allowed;
+  transform: none;
+  opacity: 0.58;
+  background: var(--bg-elevated);
+  color: var(--fg-quaternary);
+  filter: grayscale(0.25);
+}
+
+.button:disabled:hover,
+.button-secondary:disabled:hover,
+.button-ghost:disabled:hover,
+.button-danger:disabled:hover {
+  transform: none;
+}

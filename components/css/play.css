@@ -1,0 +1,319 @@
+.play-panel,
+.leaderboard-panel,
+.admin-panel {
+  display: flex;
+  flex-direction: column;
+  margin: auto 0;
+  gap: 8px;
+}
+
+body.page-play {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.page-play .page-main {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
+  min-height: 74vh;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.page-play .play-layout {
+  justify-items: center;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.page-play .play-panel {
+  width: min(100%, 820px);
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0;
+  padding-right: 0;
+  min-width: 0;
+}
+
+.challenge-center {
+  width: min(100%, 760px);
+  margin: 0 0;
+  font-family: "Montserrat";
+  font-weight: 600;
+  min-width: 0;
+}
+.level-markup {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  text-align: center;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.submission-center {
+  justify-content: center;
+}
+
+.source-pill {
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  color: var(--fg-secondary);
+  font-size: 12px;
+  font-weight: 510;
+  line-height: 1.4;
+  letter-spacing: 0.16em;
+}
+
+.challenge-frame,
+.editor-preview {
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 24px;
+  min-height: 260px;
+  background: transparent;
+}
+
+.challenge-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.challenge-frame > * {
+  max-width: 680px;
+}
+
+.chat-header,
+.section-header,
+.row-between {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.status-pill,
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: auto;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 510;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+}
+
+.chat-thread {
+  display: flex;
+  flex-direction: column;
+  max-height: 420px;
+  overflow: auto;
+  margin: 18px 0;
+}
+
+.chat-message,
+.chat-hint {
+  width: min(86%, 420px);
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+}
+
+.chat-message {
+  align-self: flex-end;
+}
+
+.chat-hint {
+  border-color: #21435a;
+  color: var(--fg-primary);
+}
+
+.chat-message-body {
+  margin: 0;
+  color: var(--fg-primary);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.chat-message-meta {
+  margin-top: 10px;
+  color: var(--fg-quaternary);
+  font-size: 11px;
+  font-weight: 510;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+}
+.submission-row > div > .field {
+  flex: 0 0 90%;
+}
+
+.submission-row > div > .send-button {
+  flex: 0 0 10%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  padding: 0 0px;
+}
+
+.submission-row > div > .send-button .send-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.send-row {
+  width: min(100%, 640px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  overflow: hidden;
+  background: transparent;
+  min-width: 0;
+}
+.send-row .field {
+  flex: 1 1 auto !important;
+  border: 0;
+  padding: 14px 18px;
+  min-height: 56px;
+  min-width: 0;
+  color: var(--fg-primary);
+  background: transparent;
+  font-family: "Montserrat";
+  font-weight: 500;
+}
+.send-row .field:focus {
+  outline: none;
+}
+.send-row .send-button {
+  flex: 0 0 56px;
+  width: 56px;
+  min-width: 48px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid rgba(255, 255, 255, 0.02);
+}
+.send-row .send-button .send-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.send-row.is-cooldown {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.04);
+  color: var(--fg-quaternary);
+  opacity: 0.8;
+}
+
+.send-row.is-cooldown .field {
+  color: var(--fg-quaternary);
+}
+
+.send-row.is-cooldown .send-button {
+  color: var(--fg-quaternary);
+  cursor: not-allowed;
+  filter: grayscale(50%);
+}
+
+.send-wait {
+  display: none;
+  margin-left: 12px;
+  color: var(--fg-quaternary);
+  font-size: 13px;
+  align-self: center;
+}
+
+.send-row.is-cooldown .send-wait {
+  display: inline-block;
+}
+
+.submission-row .send-row:hover,
+.submission-row .send-row:focus-within {
+  border-color: #24A988;
+  box-shadow: 0 8px 30px rgba(41, 119, 245, 0.06);
+}
+
+.submission-row .send-row:focus-within .field {
+  caret-color: #24A988;
+}
+
+.submission-row .send-button:hover,
+.submission-row .send-button:focus,
+.submission-row .send-button:active {
+  color: #24A988;
+}
+
+.submission-row .send-row:hover .field,
+.submission-row .send-row:focus-within .field {
+  color: var(--fg-primary);
+}
+
+.submission-row .send-row:hover .send-icon,
+.submission-row .send-row:focus-within .send-icon {
+  stroke: #24A988;
+  color: #24A988;
+}
+
+.submission-row > div > .send-button:hover {
+  color: #24A988;
+}
+
+#decorSvg {
+  position: fixed;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  z-index: 1102;
+  transition: top 120ms ease;
+  pointer-events: none;
+}
+
+.page-play .submission-row {
+  width: 100%;
+  min-width: 0;
+  justify-content: center;
+  padding: 0 16px;
+}
+.page-play .level-markup img,
+.page-play .level-markup video,
+.page-play .level-markup canvas,
+.page-play .level-markup iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+.page-play .level-markup pre,
+.page-play .level-markup code {
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+

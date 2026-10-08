@@ -1,0 +1,34 @@
+{{define "timegate"}}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{.Title}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="/components/css/main.css" />
+  </head>
+
+  <body class="page page-landing pixel">
+    {{template "header" .}}
+
+    <main class="page-main" style="min-height: 74vh">
+      <div class="container section-stack">
+        <section class="landing-hero">
+          {{if .CountdownLive}} {{template "countdown" .}} {{end}}
+          <div class="actions actions-center">
+            <a href="/" class="button">Back to landing</a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    {{template "footer" .}}
+    <script src="/components/js/app.js"></script>
+    <script src="/components/js/confetti.js"></script>
+  </body>
+</html>
+{{end}}

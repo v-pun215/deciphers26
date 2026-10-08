@@ -1,0 +1,100 @@
+{{define "play"}}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{.Title}}</title>
+    <link rel="icon" href="/assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@hackernoon/pixel-icon-library/fonts/iconfont.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css"
+    />
+    <link rel="stylesheet" href="/components/css/main.css" />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+  </head>
+  <body class="page page-play pixel">
+    {{template "header" .}} {{template "confetti" .}}
+    <main class="page-main">
+      {{template "annoucements" .}}
+      <div class="container play-layout">
+        <section class="panel play-panel challenge-center">
+          <article class="challenge-frame">
+            <div class="challenge-center">
+              <h1 class="heading-xl">
+                Level
+                <span id="level-id-display"
+                  >{{if
+                  .LevelDisplay}}{{.LevelDisplay}}{{else}}{{.Level.ID}}{{end}}</span
+                >
+              </h1>
+            </div>
+            <div
+              id="level-markup"
+              class="challenge-center prose level-markup"
+              data-markup="{{.Level.Markup}}"
+            >
+              {{.Level.Markup}}
+            </div>
+          </article>
+
+          <form id="submit-form" class="submission-row submission-center">
+            <div
+              class="send-row"
+              style="display: flex; align-items: center; gap: 8px"
+            >
+              <input
+                id="answer-input"
+                name="answer"
+                autocomplete="off"
+                class="field mono pixel-input"
+                placeholder="Enter your answer"
+                style="flex: 1"
+              />
+              <button
+                type="submit"
+                class="send-button"
+                aria-label="send"
+                data-cooldown="3"
+              >
+                <i
+                  class="hn hn-arrow-right"
+                  style="font-size: 24px; color: var(--text-main)"
+                ></i>
+              </button>
+            </div>
+          </form>
+          <p id="play-message" class="form-message"></p>
+        </section>
+      </div>
+    </main>
+    {{template "footer" .}}
+    <script id="__LEVEL__" type="application/json">
+      {{toJSON .Level}}
+    </script>
+    <script id="__IS_ADMIN__" type="application/json">
+      {{.IsAdmin}}
+    </script>
+    <script>
+      window.__LEVEL__ = JSON.parse(
+        document.getElementById("__LEVEL__").textContent || "null",
+      );
+      window.sudo = window.sudo || {};
+      window.sudo.isAdmin = JSON.parse(
+        document.getElementById("__IS_ADMIN__").textContent || "false",
+      );
+    </script>
+    <script src="/components/js/app.js"></script>
+    <script src="/components/js/confetti.js"></script>
+    <script src="/components/js/play.js"></script>
+  </body>
+</html>
+{{end}}

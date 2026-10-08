@@ -1,0 +1,68 @@
+{{define "chat"}}
+<button
+  id="chatToggleBtn" class="chat-toggle"
+>
+  <i class="hn hn-message-dots" style="font-size: 4rem; color: #24A988;"></i>
+</button>
+
+<div
+  id="chatPopupContainer"
+  class="popup-container hidden"
+  style="z-index: 1100"
+>
+  <div class="popup-content" style="max-width: 420px; max-height: 80vh">
+    <button class="popup-close" id="chatPopupCloseBtn">
+      <i class="hn hn-times" style="font-size: 24px; color: #fff;"></i>
+    </button>
+
+    <section class="chat-panel">
+      <header class="chat-header">
+        <div class="chat-title-stack">
+          <h3 class="heading-sm">Exun Clan</h3>
+        </div>
+        <div class="chat-tabs" role="tablist" aria-label="Chat sections">
+          <button
+            id="chat-tab-chat"
+            type="button"
+            class="chat-tab is-active button"
+            role="tab"
+            aria-selected="true"
+          >
+            Chat
+          </button>
+          <button
+            id="chat-tab-hints"
+            type="button"
+            class="chat-tab button"
+            role="tab"
+            aria-selected="false"
+          >
+            Hints
+          </button>
+        </div>
+      </header>
+
+      <div id="chat-thread" class="chat-thread" data-active-thread="chat">
+        {{if .Messages}}
+          {{range .Messages}}
+          <div class="{{if eq .Kind "hint"}}chat-hint{{else}}chat-message{{end}}">
+            {{if and (eq .Kind "hint") .ReplyTo}}<div class="chat-reply-ctx"><p class="chat-reply-body">{{.ReplyTo}}</p></div>{{end}}
+            <p class="chat-message-body">{{.Content}}</p>
+          </div>
+          {{end}}
+        {{else}}
+          <p class="empty-state">No chat history yet.</p>
+        {{end}}
+      </div>
+    </section>
+    <form
+      id="chat-form"
+      class="chat-compose"
+      style="display: flex; align-items: center; gap: 8px;"
+    >
+      <input id="chat-input" name="content" maxlength="512" class="field pixel-input" placeholder="Message the team" style="flex: 1;" autocomplete="off">
+      <button class="button chat-send-btn" type="submit"><i class="hn hn-arrow-right"></i></button>
+    </form>
+    </div>
+</div>
+{{end}}

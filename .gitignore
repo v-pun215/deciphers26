@@ -1,0 +1,29 @@
+# Binaries
+intrasudo26
+*.exe
+*.dll
+*.so
+*.dylib
+*.env
+# Python
+__pycache__/
+*.pyc
+
+# Database
+db/data.db
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+*.log
+
+# Editor
+.vscode/
+.idea/
+.DS_Store
+
+# Node
+node_modules/
+
+assets/clue.txt
