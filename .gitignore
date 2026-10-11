@@ -1,5 +1,6 @@
 # Binaries
 intrasudo26
+app
 *.exe
 *.dll
 *.so

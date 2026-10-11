@@ -32,7 +32,11 @@ func main() {
 		}
 	}
 
-	store, err := db.New("db/data.db")
+	dbPath := os.Getenv("DB_PATH")
+	if dbPath == "" {
+		dbPath = "db/data.db"
+	}
+	store, err := db.New(dbPath)
 	if err != nil {
 		log.Fatalf("open db: %v", err)
 	}
