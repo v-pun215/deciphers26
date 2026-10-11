@@ -17,7 +17,7 @@ import (
 	"intrasudo26/db"
 )
 
-var EmailPattern = regexp.MustCompile(`^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)?@dpsrkp\.net$`)
+var EmailPattern = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
 
 func (a *App) AuthPage(w http.ResponseWriter, r *http.Request) {
 	if _, ok := GetEmailFromRequest(a.store, r); ok {
@@ -41,7 +41,7 @@ func (a *App) SendOTP(w http.ResponseWriter, r *http.Request) {
 
 	email := strings.ToLower(strings.TrimSpace(r.FormValue("email")))
 	if !a.validateEmail(email) {
-		a.writeJSON(w, http.StatusBadRequest, map[string]any{"error": "invalid @dpsrkp.net email"})
+		a.writeJSON(w, http.StatusBadRequest, map[string]any{"error": "invalid email address"})
 		return
 	}
 	rateOK, err := a.checkOTPRateLimit(email)
@@ -235,7 +235,7 @@ func (a *App) AuthAPI(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	firstLevel := a.getFirstLevel()
+	firstLevel := a.getFirstLevelForType("logical")
 	user = User{
 		Name:      cases.Title(language.Und).String(strings.ToLower(name)),
 		Email:     email,
@@ -247,9 +247,11 @@ func (a *App) AuthAPI(w http.ResponseWriter, r *http.Request) {
 		a.writeJSON(w, http.StatusInternalServerError, map[string]any{"error": "could not create account"})
 		return
 	}
-	if err := a.store.SetLeaderboard(r.Context(), email, db.LeaderboardEntry{Email: email, Name: user.Name, Level: 0, Time: time.Now().Unix()}); err != nil {
-		a.writeJSON(w, http.StatusInternalServerError, map[string]any{"error": "could not initialize leaderboard"})
-		return
+	for _, questionType := range questionTypes {
+		if err := a.store.SetLeaderboard(r.Context(), questionType, email, db.LeaderboardEntry{Email: email, Name: user.Name, Level: 0, Time: time.Now().Unix()}); err != nil {
+			a.writeJSON(w, http.StatusInternalServerError, map[string]any{"error": "could not initialize leaderboard"})
+			return
+		}
 	}
 	if err := a.store.DeleteOTP(email); err != nil {
 		log.Printf("could not delete otp: %v", err)

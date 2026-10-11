@@ -37,7 +37,7 @@
     const body = new URLSearchParams();
     body.append("answer", submittedAnswer);
     const qp = new URLSearchParams(window.location.search);
-    const levelType = qp.get("type") || "cryptic";
+    const levelType = qp.get("type") || "logical";
     body.append("type", levelType);
 
     answerSending = true;

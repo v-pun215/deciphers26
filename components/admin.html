@@ -71,13 +71,7 @@
                   rows="3"
                 ></textarea>
               </div>
-              <div class="form-col" style="width: 220px">
-                <p class="form-label">ID (optional)</p>
-                <input
-                  id="announcementId"
-                  class="form-input pixel-input"
-                  placeholder="Optional ID"
-                />
+              <div class="form-col" style="width: 220px; justify-content: end">
                 <div style="margin-top: 8px">
                   <button class="button" onclick="submitAnnouncement()">
                     Save
@@ -118,12 +112,22 @@
             </div>
 
             <div class="form-col">
-              <p class="form-label">Level Id</p>
+              <p class="form-label">Question Type</p>
+              <select id="questionType" class="form-input pixel-input">
+                <option value="logical">Logical Reasoning</option>
+                <option value="crossword">Crossword</option>
+                <option value="problem-solving">Problem Solving</option>
+              </select>
+            </div>
+
+            <div class="form-col">
+              <p class="form-label">Level ID</p>
               <input
                 type="text"
                 id="levelId"
                 class="form-input pixel-input"
-                placeholder="Level Id"
+                placeholder="Generated automatically"
+                readonly
               />
             </div>
           </div>

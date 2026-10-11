@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let offset = 0;
     const limit = 20;
     let isLoading = false;
+    const questionType = new URLSearchParams(window.location.search).get("type") || "logical";
 
     let meObserver = new IntersectionObserver((entries) => {
         const myRankBar = document.getElementById("my-rank-bar");
@@ -29,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const currentOffset = offset;
 
         try {
-            const response = await fetch(`/api/leaderboard?limit=${limit}&offset=${currentOffset}`);
+            const response = await fetch(`/api/leaderboard?type=${encodeURIComponent(questionType)}&limit=${limit}&offset=${currentOffset}`);
             if (!response.ok) throw new Error("Failed to load");
             const payload = await response.json();
 

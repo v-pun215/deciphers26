@@ -194,6 +194,7 @@ type ViewData struct {
 	Messages            []ChatMessage
 	Hints               []ChatMessage
 	LevelDisplay        string
+	QuestionType        string
 	LeadsEnabled        bool
 }
 
@@ -292,7 +293,7 @@ func (a *App) Seed() error {
 	}
 	if len(lvls) == 0 {
 		level := Level{
-			ID:         "cryptic-0",
+			ID:         "logical-0",
 			Markup:     "Welcome to **The Deci-phers v1.0**.",
 			Answer:     "intrasudo26",
 			SourceHint: "Kickoff level",
@@ -431,6 +432,34 @@ func normalizeAnswer(v string) string {
 	return strings.TrimSpace(strings.ToLower(v))
 }
 
+var questionTypes = []string{"logical", "crossword", "problem-solving"}
+
+func normalizeQuestionType(v string) string {
+	v = strings.ToLower(strings.TrimSpace(v))
+	for _, questionType := range questionTypes {
+		if v == questionType {
+			return v
+		}
+	}
+	return "logical"
+}
+
+func (a *App) LevelPositionForType(id, questionType string) (int, bool) {
+	a.levelsMu.RLock()
+	defer a.levelsMu.RUnlock()
+	position := 0
+	for _, level := range a.levelsCache {
+		if !strings.HasPrefix(level.ID, questionType+"-") {
+			continue
+		}
+		if level.ID == id {
+			return position, true
+		}
+		position++
+	}
+	return 0, false
+}
+
 func (a *App) loadLevelsCache() {
 	var all []Level
 	lvls, err := a.store.ListLevels(context.Background())
@@ -465,10 +494,19 @@ func (a *App) getFirstLevelForType(t string) string {
 			return lv.ID
 		}
 	}
-	if len(a.levelsCache) > 0 {
-		return a.levelsCache[0].ID
-	}
 	return ""
+}
+
+func (a *App) userLevelForType(user *User, questionType string) string {
+	if user != nil && user.Levels != nil {
+		if levelID := strings.TrimSpace(user.Levels[questionType]); levelID != "" {
+			return levelID
+		}
+	}
+	if user != nil && strings.HasPrefix(user.Level, questionType+"-") {
+		return user.Level
+	}
+	return a.getFirstLevelForType(questionType)
 }
 
 func (a *App) NextLevelForType(curKey string, t string) string {
@@ -1003,7 +1041,7 @@ func (a *App) BotReset(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "could not update account", http.StatusInternalServerError)
 		return
 	}
-	pos, posOK := a.LevelPosition(levelID)
+	pos, posOK := a.LevelPositionForType(levelID, levelType)
 	lbEntry := db.LeaderboardEntry{
 		Email: acc.Email,
 		Name:  acc.Name,
@@ -1013,7 +1051,7 @@ func (a *App) BotReset(w http.ResponseWriter, r *http.Request) {
 	if posOK {
 		lbEntry.Level = pos
 	}
-	if err := a.store.SetLeaderboard(r.Context(), email, lbEntry); err != nil {
+	if err := a.store.SetLeaderboard(r.Context(), levelType, email, lbEntry); err != nil {
 		log.Printf("BotReset: could not update leaderboard for %s: %v", email, err)
 	}
 	w.WriteHeader(http.StatusOK)

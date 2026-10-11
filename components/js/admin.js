@@ -5,6 +5,7 @@
   const preview = document.getElementById("displayBox");
   const answerInput = document.getElementById("answerField");
   const idInput = document.getElementById("levelId");
+  const questionTypeInput = document.getElementById("questionType");
   const title = document.getElementById("level_id");
   let editingLevelId = "";
 
@@ -15,6 +16,11 @@
     editingLevelId = current.ID || current.id || "";
     idInput.value = editingLevelId;
     idInput.readOnly = Boolean(editingLevelId);
+    const parsed = editingLevelId.match(/^(logical|crossword|problem-solving)-\d+$/i);
+    if (questionTypeInput) {
+      questionTypeInput.value = parsed ? parsed[1].toLowerCase() : "logical";
+      questionTypeInput.disabled = Boolean(editingLevelId);
+    }
     title.textContent = editingLevelId ? `Edit Level ${editingLevelId}` : "New Level";
     markupInput.value = current.Markup || current.markup || "";
     answerInput.value = current.Answer || current.answer || "";
@@ -31,15 +37,15 @@
     popup.classList.add("hidden");
   }
 
-  function nextLevelId() {
+  function nextLevelId(questionType) {
     const levels = Array.isArray(window.__LEVELS__) ? window.__LEVELS__ : [];
     let maxId = -1;
     levels.forEach((level) => {
       const id = String(level.ID || level.id || "");
-      const match = id.match(/^cryptic-(\d+)$/i);
+      const match = id.match(new RegExp(`^${questionType}-(\\d+)$`, "i"));
       if (match) maxId = Math.max(maxId, Number(match[1]));
     });
-    return `cryptic-${maxId + 1}`;
+    return `${questionType}-${maxId + 1}`;
   }
 
   async function request(url, options) {
@@ -80,9 +86,8 @@
 
   window.submitAnnouncement = async () => {
     const content = document.getElementById("announcementContent");
-    const id = document.getElementById("announcementId");
-    if (!content || !id) return;
-    const data = new URLSearchParams({ content: content.value.trim(), id: id.value.trim() });
+    if (!content) return;
+    const data = new URLSearchParams({ content: content.value.trim() });
     try {
       await request("/api/admin/announcements", { method: "POST", body: data });
       window.sudo.toast("Announcement saved.", "success");
@@ -93,12 +98,17 @@
   };
 
   document.getElementById("new-level-btn")?.addEventListener("click", () => {
-    const id = nextLevelId();
     showPopup({});
-    idInput.value = id;
-    idInput.readOnly = false;
-    title.textContent = `New Level ${id}`;
+    const questionType = questionTypeInput ? questionTypeInput.value : "logical";
+    idInput.value = nextLevelId(questionType);
+    idInput.readOnly = true;
+    if (questionTypeInput) questionTypeInput.disabled = false;
+    title.textContent = `New ${questionType} Level`;
     editingLevelId = "";
+  });
+
+  questionTypeInput?.addEventListener("change", () => {
+    if (!editingLevelId) idInput.value = nextLevelId(questionTypeInput.value);
   });
 
   levelCards.forEach((card) => {

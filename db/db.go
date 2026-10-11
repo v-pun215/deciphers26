@@ -72,6 +72,14 @@ func New(path string) (*Store, error) {
             level INTEGER,
             time INTEGER
         );`,
+		`CREATE TABLE IF NOT EXISTS leaderboard_by_type (
+            email TEXT REFERENCES accounts(email) ON DELETE CASCADE,
+            question_type TEXT NOT NULL,
+            name TEXT,
+            level INTEGER,
+            time INTEGER,
+            PRIMARY KEY (email, question_type)
+        );`,
 		`CREATE TABLE IF NOT EXISTS otp (
             email TEXT PRIMARY KEY,
             code TEXT,
@@ -140,8 +148,16 @@ func New(path string) (*Store, error) {
 			return nil, err
 		}
 	}
+	// Preserve the original single leaderboard as the logical-reasoning board.
+	// New installs and all new writes use leaderboard_by_type.
+	if _, err := conn.Exec(`INSERT OR IGNORE INTO leaderboard_by_type(email, question_type, name, level, time)
+        SELECT email, 'logical', name, level, time FROM leaderboard`); err != nil {
+		_ = conn.Close()
+		return nil, err
+	}
 
 	idx := []string{
+		`CREATE INDEX IF NOT EXISTS idx_leaderboard_by_type_rank ON leaderboard_by_type(question_type, level DESC, time ASC);`,
 		`CREATE INDEX IF NOT EXISTS idx_messages_owner ON messages(owner);`,
 		`CREATE INDEX IF NOT EXISTS idx_hints_level_id ON hints(level_id);`,
 		`CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);`,

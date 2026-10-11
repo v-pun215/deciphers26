@@ -22,10 +22,12 @@ func (a *App) TimegatePage(w http.ResponseWriter, r *http.Request) {
 func (a *App) LeaderboardPage(w http.ResponseWriter, r *http.Request) {
 	data := a.baseData(r)
 	data.Title = "The Deci-phers v1.0 | Leaderboard"
+	data.QuestionType = normalizeQuestionType(r.URL.Query().Get("type"))
 	a.render(w, "leaderboard", data)
 }
 
 func (a *App) LeaderboardAPI(w http.ResponseWriter, r *http.Request) {
+	questionType := normalizeQuestionType(r.URL.Query().Get("type"))
 	limitStr := r.URL.Query().Get("limit")
 	offsetStr := r.URL.Query().Get("offset")
 	limit, err := strconv.Atoi(limitStr)
@@ -41,7 +43,7 @@ func (a *App) LeaderboardAPI(w http.ResponseWriter, r *http.Request) {
 	}
 
 	viewerEmail, _ := GetEmailFromRequest(a.store, r)
-	rows, err := a.store.ListLeaderboardPaginated(r.Context(), viewerEmail, limit, offset)
+	rows, err := a.store.ListLeaderboardPaginated(r.Context(), questionType, viewerEmail, limit, offset)
 	if err != nil {
 		log.Printf("could not load leaderboard: %v", err)
 		a.writeJSON(w, http.StatusInternalServerError, map[string]any{"error": "could not load leaderboard"})
@@ -53,12 +55,12 @@ func (a *App) LeaderboardAPI(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if viewerEmail != "" {
-		rank, err := a.store.GetLeaderboardRank(r.Context(), viewerEmail)
+		rank, err := a.store.GetLeaderboardRank(r.Context(), questionType, viewerEmail)
 		if err == nil && rank > 0 {
 			response["my_rank"] = rank
 			acc, okAcc, _ := a.store.GetAccount(r.Context(), viewerEmail)
 			if okAcc {
-				lbRows, err := a.store.ListLeaderboardPaginated(r.Context(), viewerEmail, 1, rank-1)
+				lbRows, err := a.store.ListLeaderboardPaginated(r.Context(), questionType, viewerEmail, 1, rank-1)
 				if err == nil && len(lbRows) > 0 {
 					response["my_entry"] = lbRows[0]
 				} else {

@@ -144,7 +144,7 @@
     isLoadingMore = true;
     try {
       const qp = new URLSearchParams(window.location.search);
-      const levelType = qp.get("type") || "cryptic";
+      const levelType = qp.get("type") || "logical";
       const nextOffset = messageOffset + 20;
       let url = `/api/chats?type=${encodeURIComponent(levelType)}&limit=20&offset=${nextOffset}`;
       const { res: resp, parsed } = await window.sudo.fetchWithCSRF(url, {
@@ -176,7 +176,7 @@
   async function pollOnce() {
     try {
       const qp = new URLSearchParams(window.location.search);
-      const levelType = qp.get("type") || "cryptic";
+      const levelType = qp.get("type") || "logical";
       let url = "/api/chats/checksum?type=" + encodeURIComponent(levelType);
       if (lastChecksum) url += "&checksum=" + encodeURIComponent(lastChecksum);
       const { res: resp, parsed } = await window.sudo.fetchWithCSRF(url, {
@@ -318,7 +318,7 @@
     const body = new URLSearchParams();
     body.append("content", content);
     const qp = new URLSearchParams(window.location.search);
-    body.append("type", qp.get("type") || "cryptic");
+    body.append("type", qp.get("type") || "logical");
     try {
       const { res: resp, parsed } = await window.sudo.fetchWithCSRF(
         "/api/messages",

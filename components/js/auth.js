@@ -97,9 +97,9 @@
         return;
       }
 
-      const emailRegex = /^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)?@dpsrkp\.net$/;
+      const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
       if (!emailRegex.test(email)) {
-        window.sudo.toast("invalid @dpsrkp.net email", "error");
+        window.sudo.toast("Please enter a valid email address.", "error");
         return;
       }
 

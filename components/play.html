@@ -29,6 +29,11 @@
         <section class="panel play-panel challenge-center">
           <article class="challenge-frame">
             <div class="challenge-center">
+              <nav class="question-switcher" aria-label="Question type">
+                <a href="/play?type=logical" class="question-switcher-item {{if eq .QuestionType "logical"}}is-active{{end}}">Logical Reasoning</a>
+                <a href="/play?type=crossword" class="question-switcher-item {{if eq .QuestionType "crossword"}}is-active{{end}}">Crossword</a>
+                <a href="/play?type=problem-solving" class="question-switcher-item {{if eq .QuestionType "problem-solving"}}is-active{{end}}">Problem Solving</a>
+              </nav>
               <h1 class="heading-xl">
                 Level
                 <span id="level-id-display"

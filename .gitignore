@@ -27,3 +27,4 @@ db/data.db
 node_modules/
 
 assets/clue.txt
+.run

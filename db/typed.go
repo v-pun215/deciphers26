@@ -259,16 +259,16 @@ func (s *Store) DeleteHint(ctx context.Context, id string) error {
 	return nil
 }
 
-func (s *Store) ListLeaderboardPaginated(ctx context.Context, viewerEmail string, limit, offset int) ([]LeaderboardEntry, error) {
+func (s *Store) ListLeaderboardPaginated(ctx context.Context, questionType, viewerEmail string, limit, offset int) ([]LeaderboardEntry, error) {
 	query := `
 		SELECT l.email, l.name, l.level, l.time 
-		FROM leaderboard l
+		FROM leaderboard_by_type l
 		LEFT JOIN meta m ON m.key = 'hidden_emails:' || l.email
-		WHERE (m.value IS NULL OR m.value != '"true"') OR l.email = ?
+		WHERE l.question_type = ? AND ((m.value IS NULL OR m.value != '"true"') OR l.email = ?)
 		ORDER BY l.level DESC, l.time ASC 
 		LIMIT ? OFFSET ?
 	`
-	rows, err := s.conn.QueryContext(ctx, query, viewerEmail, limit, offset)
+	rows, err := s.conn.QueryContext(ctx, query, questionType, viewerEmail, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("ListLeaderboardPaginated: %w", err)
 	}
@@ -286,17 +286,24 @@ func (s *Store) ListLeaderboardPaginated(ctx context.Context, viewerEmail string
 	return out, nil
 }
 
-func (s *Store) GetLeaderboardRank(ctx context.Context, viewerEmail string) (int, error) {
+func (s *Store) GetLeaderboardRank(ctx context.Context, questionType, viewerEmail string) (int, error) {
+	var exists int
+	if err := s.conn.QueryRowContext(ctx, `SELECT 1 FROM leaderboard_by_type WHERE email = ? AND question_type = ?`, viewerEmail, questionType).Scan(&exists); err != nil {
+		if err == sql.ErrNoRows {
+			return 0, nil
+		}
+		return 0, fmt.Errorf("GetLeaderboardRank lookup: %w", err)
+	}
 	var rank int
 	query := `
 		SELECT COUNT(*) + 1
-		FROM leaderboard l
+		FROM leaderboard_by_type l
 		LEFT JOIN meta m ON m.key = 'hidden_emails:' || l.email
-		WHERE (l.level > (SELECT level FROM leaderboard WHERE email = ?)
-		   OR (l.level = (SELECT level FROM leaderboard WHERE email = ?) AND l.time < (SELECT time FROM leaderboard WHERE email = ?)))
+		WHERE l.question_type = ? AND (l.level > (SELECT level FROM leaderboard_by_type WHERE email = ? AND question_type = ?)
+		   OR (l.level = (SELECT level FROM leaderboard_by_type WHERE email = ? AND question_type = ?) AND l.time < (SELECT time FROM leaderboard_by_type WHERE email = ? AND question_type = ?)))
 		  AND ((m.value IS NULL OR m.value != '"true"') OR l.email = ?)
 	`
-	err := s.conn.QueryRowContext(ctx, query, viewerEmail, viewerEmail, viewerEmail, viewerEmail).Scan(&rank)
+	err := s.conn.QueryRowContext(ctx, query, questionType, viewerEmail, questionType, viewerEmail, questionType, viewerEmail, questionType, viewerEmail).Scan(&rank)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return 0, nil
@@ -427,8 +434,8 @@ func (s *Store) SetStatus(ctx context.Context, level string, gs GameStatus) erro
 	return nil
 }
 
-func (s *Store) SetLeaderboard(ctx context.Context, email string, ent LeaderboardEntry) error {
-	_, err := s.conn.ExecContext(ctx, `INSERT INTO leaderboard(email, name, level, time) VALUES(?, ?, ?, ?) ON CONFLICT(email) DO UPDATE SET name=excluded.name, level=excluded.level, time=excluded.time`, email, ent.Name, ent.Level, ent.Time)
+func (s *Store) SetLeaderboard(ctx context.Context, questionType, email string, ent LeaderboardEntry) error {
+	_, err := s.conn.ExecContext(ctx, `INSERT INTO leaderboard_by_type(email, question_type, name, level, time) VALUES(?, ?, ?, ?, ?) ON CONFLICT(email, question_type) DO UPDATE SET name=excluded.name, level=excluded.level, time=excluded.time`, email, questionType, ent.Name, ent.Level, ent.Time)
 	if err != nil {
 		return fmt.Errorf("SetLeaderboard: %w", err)
 	}

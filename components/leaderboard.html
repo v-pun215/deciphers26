@@ -20,6 +20,11 @@
     <main class="page-main" style="min-height: 74vh">
       <div class="container">
         <section class="panel leaderboard-panel">
+          <nav class="question-switcher" aria-label="Leaderboard type">
+            <a href="/leaderboard?type=logical" class="question-switcher-item {{if eq .QuestionType "logical"}}is-active{{end}}">Logical Reasoning</a>
+            <a href="/leaderboard?type=crossword" class="question-switcher-item {{if eq .QuestionType "crossword"}}is-active{{end}}">Crossword</a>
+            <a href="/leaderboard?type=problem-solving" class="question-switcher-item {{if eq .QuestionType "problem-solving"}}is-active{{end}}">Problem Solving</a>
+          </nav>
 
           <div class="leaderboard-head">
             <div>Rank</div>

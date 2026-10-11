@@ -38,17 +38,8 @@ func (a *App) PlayPage(w http.ResponseWriter, r *http.Request) {
 
 	var level Level
 	qs := r.URL.Query()
-	levelType := strings.TrimSpace(qs.Get("type"))
-	if levelType == "" {
-		levelType = "cryptic"
-	}
-	userLevelKey := data.User.Level
-	if lvl, ok := data.User.Levels[levelType]; ok {
-		userLevelKey = lvl
-	}
-	if userLevelKey == "" {
-		userLevelKey = a.getFirstLevelForType(levelType)
-	}
+	levelType := normalizeQuestionType(qs.Get("type"))
+	userLevelKey := a.userLevelForType(data.User, levelType)
 	lv, ok, _ := a.store.GetLevel(r.Context(), userLevelKey)
 	if !ok {
 		level = Level{
@@ -59,6 +50,7 @@ func (a *App) PlayPage(w http.ResponseWriter, r *http.Request) {
 		level = Level{ID: lv.ID, Markup: lv.Markup, UpdatedAt: lv.UpdatedAt}
 	}
 	data.Title = "The Deci-phers v1.0 | Play"
+	data.QuestionType = levelType
 	data.Level = level
 	data.LeadsEnabled = true
 	if gs, ok, err := a.store.GetStatus(r.Context(), level.ID); err == nil && ok {
@@ -105,17 +97,9 @@ func (a *App) SubmitAnswer(w http.ResponseWriter, r *http.Request) {
 	if levelType == "" {
 		levelType = strings.TrimSpace(r.FormValue("type"))
 	}
-	if levelType == "" {
-		levelType = "cryptic"
-	}
+	levelType = normalizeQuestionType(levelType)
 	var level Level
-	curKey := user.Level
-	if lvl, ok := user.Levels[levelType]; ok {
-		curKey = lvl
-	}
-	if curKey == "" {
-		curKey = a.getFirstLevelForType(levelType)
-	}
+	curKey := a.userLevelForType(user, levelType)
 	lvl, ok, err := a.store.GetLevel(r.Context(), curKey)
 	if err != nil || !ok {
 		a.writeJSON(w, http.StatusNotFound, map[string]any{"error": "level not found"})
@@ -148,7 +132,7 @@ func (a *App) SubmitAnswer(w http.ResponseWriter, r *http.Request) {
 		a.writeJSON(w, http.StatusInternalServerError, map[string]any{"error": "could not update account"})
 		return
 	}
-	pos, ok := a.LevelPosition(nextKey)
+	pos, ok := a.LevelPositionForType(nextKey, levelType)
 	lbEntry := db.LeaderboardEntry{
 		Email: user.Email,
 		Name:  user.Name,
@@ -158,7 +142,7 @@ func (a *App) SubmitAnswer(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		lbEntry.Level = pos
 	}
-	if err := a.store.SetLeaderboard(r.Context(), strings.ToLower(user.Email), lbEntry); err != nil {
+	if err := a.store.SetLeaderboard(r.Context(), levelType, strings.ToLower(user.Email), lbEntry); err != nil {
 		a.writeJSON(w, http.StatusInternalServerError, map[string]any{"error": "could not update leaderboard"})
 		return
 	}
@@ -198,17 +182,8 @@ func (a *App) SubmitMessage(w http.ResponseWriter, r *http.Request) {
 		a.writeJSON(w, http.StatusBadRequest, map[string]any{"error": "message too long"})
 		return
 	}
-	levelType := strings.TrimSpace(r.FormValue("type"))
-	if levelType == "" {
-		levelType = "cryptic"
-	}
-	levelID := user.Level
-	if lvl, ok := user.Levels[levelType]; ok {
-		levelID = lvl
-	}
-	if levelID == "" {
-		levelID = a.getFirstLevelForType(levelType)
-	}
+	levelType := normalizeQuestionType(r.FormValue("type"))
+	levelID := a.userLevelForType(user, levelType)
 
 	if gs, ok, err := a.store.GetStatus(r.Context(), levelID); err == nil && ok && !gs.Leads {
 		a.writeJSON(w, http.StatusForbidden, map[string]any{"error": "Messaging is currently unavailable for this level."})
@@ -263,16 +238,8 @@ func (a *App) Chats(w http.ResponseWriter, r *http.Request) {
 	}
 	qs := r.URL.Query()
 	levelType := strings.TrimSpace(qs.Get("type"))
-	if levelType == "" {
-		levelType = "cryptic"
-	}
-	levelID := user.Level
-	if lvl, ok := user.Levels[levelType]; ok {
-		levelID = lvl
-	}
-	if levelID == "" {
-		levelID = a.getFirstLevelForType(levelType)
-	}
+	levelType = normalizeQuestionType(levelType)
+	levelID := a.userLevelForType(user, levelType)
 	limit := 20
 	offset := 0
 	if l := qs.Get("limit"); l != "" {
@@ -311,16 +278,8 @@ func (a *App) ChatChecksum(w http.ResponseWriter, r *http.Request) {
 	}
 	qs := r.URL.Query()
 	levelType := strings.TrimSpace(qs.Get("type"))
-	if levelType == "" {
-		levelType = "cryptic"
-	}
-	levelID := user.Level
-	if lvl, ok := user.Levels[levelType]; ok {
-		levelID = lvl
-	}
-	if levelID == "" {
-		levelID = a.getFirstLevelForType(levelType)
-	}
+	levelType = normalizeQuestionType(levelType)
+	levelID := a.userLevelForType(user, levelType)
 
 	status := GameStatus{Leads: true}
 	if gs, ok, err := a.store.GetStatus(r.Context(), levelID); err == nil && ok {

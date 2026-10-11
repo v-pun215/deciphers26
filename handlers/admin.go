@@ -51,7 +51,13 @@ func (a *App) UpsertLevel(w http.ResponseWriter, r *http.Request) {
 	}
 	prefix, _, ok := parseTrailingInt(id)
 	if !ok || prefix == "" {
-		a.writeJSON(w, http.StatusBadRequest, map[string]any{"error": "level id must be in format <type>-<n>"})
+		a.writeJSON(w, http.StatusBadRequest, map[string]any{"error": "level id must be in format logical-<n>, crossword-<n>, or problem-solving-<n>"})
+		return
+	}
+	// prefix ends with "-", strip it before normalizing (e.g. "logical-" → "logical")
+	cleanPrefix := strings.TrimRight(prefix, "-")
+	if normalizeQuestionType(cleanPrefix) != cleanPrefix {
+		a.writeJSON(w, http.StatusBadRequest, map[string]any{"error": "level id must be in format logical-<n>, crossword-<n>, or problem-solving-<n>"})
 		return
 	}
 

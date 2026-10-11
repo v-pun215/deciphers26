@@ -77,7 +77,7 @@
 
           </div>
           <div class="actions actions-center" style="margin-top: 30px;">
-            <a href="/auth" class="button">Register for The Deci-phers v1.0</a>
+            <a id="reg-btn" href="{{if .LoggedIn}}/play{{else}}/auth{{end}}" class="button">{{if .LoggedIn}}Play{{else}}Register for The Deci-phers v1.0{{end}}</a>
           </div>
         </section>
 

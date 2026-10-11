@@ -94,7 +94,7 @@ window.sudo = ((existing) => {
         })[c],
     );
   }
-
+  
   async function computeDOMChecksum() {
     if (!annList) return null;
     const items = Array.from(annList.querySelectorAll(".announcement-item"));
