@@ -28,9 +28,8 @@ stop_pid() {
 
 cleanup() {
     echo "Stopping all services..."
-    stop_pid "$BOT_PID"
     stop_pid "$MAIN_PID"
-    rm -f "$RUN_DIR/main.pid" "$RUN_DIR/bot.pid"
+    rm -f "$RUN_DIR/main.pid"
     echo "All services stopped."
     exit 0
 }
@@ -53,21 +52,8 @@ echo "$MAIN_PID" > "$RUN_DIR/main.pid"
 sleep 1
 check_alive "$MAIN_PID" "Main application"
 
-if command -v python3 >/dev/null 2>&1; then
-    echo "Starting discord bot"
-    PYTHONUNBUFFERED=1 python3 bot.py &
-    BOT_PID=$!
-    echo "$BOT_PID" > "$RUN_DIR/bot.pid"
-    sleep 1
-    check_alive "$BOT_PID" "Discord bot"
-else
-    echo "python3 not found; discord bot not started"
-    BOT_PID=""
-fi
-
 echo "All services started:"
 echo "Main App PID: $MAIN_PID"
-echo "Discord Bot PID: ${BOT_PID:-not started}"
 echo "Website: http://127.0.0.1:8080/"
 echo "running"
 

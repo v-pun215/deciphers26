@@ -47,15 +47,13 @@ force_pid() {
 
 echo "Stopping services..."
 
-stop_pid_file "$RUN_DIR/bot.pid" "discord bot"
 stop_pid_file "$RUN_DIR/main.pid" "main application"
 stop_port 8080
 stop_pattern "./intrasudo26" "main application"
-stop_pattern "python3 bot.py" "discord bot"
 
 sleep 1
 
-for file in "$RUN_DIR/bot.pid" "$RUN_DIR/main.pid"; do
+for file in "$RUN_DIR/main.pid"; do
   if [ -f "$file" ]; then
     pid="$(cat "$file" 2>/dev/null || true)"
     force_pid "$pid"
