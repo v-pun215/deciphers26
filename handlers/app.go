@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"context"
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/big"
 	"net/http"
 	"net/url"
 	"os"
@@ -31,6 +33,8 @@ type App struct {
 	levelIndex  map[string]int
 	levelsMu    sync.RWMutex
 	metrics     *Metrics
+	otpStore    map[string]OTPRecord
+	otpMu       sync.RWMutex
 }
 
 type Metrics struct {
@@ -253,6 +257,7 @@ func NewApp(store *db.Store, renderer *tpl.Renderer) *App {
 			RequestsByMethod: make(map[string]int64),
 			StatusCounts:     make(map[int]int64),
 		},
+		otpStore: make(map[string]OTPRecord),
 	}
 
 	if strings.TrimSpace(os.Getenv("SMTP_HOST")) != "" {
@@ -375,10 +380,12 @@ func (a *App) duringEvent() bool {
 	return (now.Equal(a.startTime) || now.After(a.startTime)) && now.Before(a.endTime)
 }
 
-func (a *App) otpCode(email string) string {
-	sum := sha256.Sum256([]byte(strings.ToLower(email) + ":" + a.salt))
-	raw := int(sum[0])<<16 | int(sum[1])<<8 | int(sum[2])
-	return fmt.Sprintf("%06d", raw%1000000)
+func (a *App) otpCode(_ string) string {
+	n, err := rand.Int(rand.Reader, big.NewInt(1000000))
+	if err != nil {
+		return "000000"
+	}
+	return fmt.Sprintf("%06d", n.Int64())
 }
 
 func (a *App) baseData(r *http.Request) ViewData {

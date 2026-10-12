@@ -55,17 +55,6 @@ func (a *App) SendOTP(w http.ResponseWriter, r *http.Request) {
 	}
 	code := a.otpCode(email)
 
-	existing, ok, err := a.store.GetOTP(email)
-	if err != nil {
-		a.writeJSON(w, http.StatusInternalServerError, map[string]any{"error": "could not check otp"})
-		return
-	}
-	if ok && time.Now().Unix() <= existing.ExpiresAt {
-		log.Printf("OTP still valid for %s: %s", email, code)
-		a.writeJSON(w, http.StatusOK, map[string]any{"success": true})
-		return
-	}
-
 	log.Printf("OTP generated for %s: %s", email, code)
 
 	hash := sha256.Sum256([]byte(a.salt + code))
@@ -75,10 +64,10 @@ func (a *App) SendOTP(w http.ResponseWriter, r *http.Request) {
 		Code:      pub,
 		ExpiresAt: time.Now().Add(10 * time.Minute).Unix(),
 	}
-	if err := a.store.SetOTP(email, record); err != nil {
-		a.writeJSON(w, http.StatusInternalServerError, map[string]any{"error": "could not save otp"})
-		return
-	}
+	a.otpMu.Lock()
+	a.otpStore[email] = OTPRecord{Code: pub, ExpiresAt: record.ExpiresAt}
+	a.otpMu.Unlock()
+	_ = a.store.SetOTP(email, record)
 
 	tmpl, err := template.ParseFiles("otp.html")
 	if err != nil {
@@ -198,27 +187,47 @@ func (a *App) AuthAPI(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	record, ok, err := a.store.GetOTP(email)
-	if err != nil {
-		a.writeJSON(w, http.StatusInternalServerError, map[string]any{"error": "could not verify otp"})
-		return
+	var recordCode string
+	var recordExpiresAt int64
+	var foundOTP bool
+
+	a.otpMu.RLock()
+	if memRec, ok := a.otpStore[email]; ok {
+		recordCode = memRec.Code
+		recordExpiresAt = memRec.ExpiresAt
+		foundOTP = true
 	}
-	if !ok || time.Now().Unix() > record.ExpiresAt {
+	a.otpMu.RUnlock()
+
+	if !foundOTP {
+		record, ok, err := a.store.GetOTP(email)
+		if err == nil && ok {
+			recordCode = record.Code
+			recordExpiresAt = record.ExpiresAt
+			foundOTP = true
+		}
+	}
+
+	if !foundOTP || time.Now().Unix() > recordExpiresAt {
+		log.Printf("AuthAPI OTP not found or expired for %s (found=%v, now=%d, expires=%d)", email, foundOTP, time.Now().Unix(), recordExpiresAt)
 		a.writeJSON(w, http.StatusBadRequest, map[string]any{"error": "invalid or expired otp"})
 		return
 	}
 
 	providedHashArr := sha256.Sum256([]byte(a.salt + otp))
 	providedHash := hex.EncodeToString(providedHashArr[:])
-	if providedHash != record.Code {
+	if providedHash != recordCode {
+		log.Printf("AuthAPI hash mismatch for %s: got %s, expected %s", email, providedHash, recordCode)
 		a.writeJSON(w, http.StatusBadRequest, map[string]any{"error": "invalid or expired otp"})
 		return
 	}
 
+	a.otpMu.Lock()
+	delete(a.otpStore, email)
+	a.otpMu.Unlock()
+	_ = a.store.DeleteOTP(email)
+
 	if exists {
-		if err := a.store.DeleteOTP(email); err != nil {
-			log.Printf("could not delete otp: %v", err)
-		}
 		sid, err := genSessionID()
 		if err == nil {
 			expiresAt := time.Now().Add(24 * time.Hour).Unix()
